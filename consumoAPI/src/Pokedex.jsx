@@ -9,7 +9,7 @@ function Pokedex() {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`)
         const data = await response.json()
         setPoke(data)
-        setEntrou(!entrou)
+        setEntrou(true)
     }
 
 
