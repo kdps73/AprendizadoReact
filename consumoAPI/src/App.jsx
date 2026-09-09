@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function App() {
     const [usuarios, setUsuarios] = useState([])
+    const [pesquisa, setPesquisa] =useState()
 
     async function readAll(){
         const response = await fetch("https://dummyjson.com/users")
@@ -10,23 +11,37 @@ function App() {
         console.log(data.users)
     }
 
+    async function readName(nome){
+        const response = await fetch(`https://dummyjson.com/users/search?q=${nome}`)
+        const data = await response.json()
+        setUsuarios(data.users)
+    }
+
      function readInf(usuario) {
         alert(`Telefone: ${usuario.phone} \n Email: ${usuario.email} \n Mora em: ${usuario.address.city}`)
     }
+
+    useEffect(()=> {
+        readAll()
+    }, [])
 
     return (
         <>
             <h1>Consumo de API</h1>
             <p>Buscando dados da API dummyJSON</p>
             
-            <ol>
+            <hr/>
+            <input placeholder="Digite um nome..." onChange={e=> setPesquisa(e.target.value)}/>
+            <button onClick={()=> readName(pesquisa)}>🔎Pesquisar</button>
+            <ul>
                 {usuarios.length != 0 ?
-                    usuarios.map(i => i.gender == "female" ? <li> <img src={`https://api.dicebear.com/10.x/initials/svg?seed=${i.firstName}`} width={40} />Sra {i.lastName} tem {i.age} anos. <button onClick={()=> readInf(i)}>Ver informações</button></li> : <li key={i.id}><img src={`https://api.dicebear.com/10.x/initials/svg?seed=${i.firstName}`} width={40} />Sr {i.lastName} tem {i.age} anos. <button onClick={()=> readInf(i)}>Ver informações</button></li>)
+                    usuarios.map(
+                        i => <li  key={i.id}> <img src={`https://api.dicebear.com/10.x/pixel-art/svg?seed=${i.firstName}`} width={40} />{i.gender == "female" ? "Senhora" : "Senhor"} {i.firstName +" "+ i.lastName} tem {i.age} anos. <button onClick={()=> readInf(i)}>Ver informações</button></li>)
                 :
-                   <button onClick={readAll}>Carregar dados</button>
+                   <p>Lista vazia...</p>
                 }
                 
-            </ol>
+            </ul>
 
         </>
     )
